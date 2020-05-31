@@ -831,8 +831,7 @@ MonoBehaviour:
   m_text: "\u0421\u043E\u0431\u0440\u0430\u0442\u044C"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 0}
-  m_sharedMaterial: {fileID: -3804156100462592922, guid: ab4c0aca39a8840b4b1215eee94da7ee,
-    type: 2}
+  m_sharedMaterial: {fileID: 0}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1854,12 +1853,12 @@ MonoBehaviour:
   animateConstractBild: {fileID: 4794122596912228221}
   timeBuild: 0
   consractBild: 1
-  skill: []
+  skills:
+  - {fileID: 4179169719418080934, guid: 33895e8772ca24e4d8a3ed9d71e5d561, type: 3}
   needTree: 0
   needGold: 55
   selected: 0
-  panelClose: 2
-  panelOpen: 2
+  panelOpen: 1
   openPanel: {fileID: 0}
   healthBar: {fileID: 2014031822}
   maxHealth: 100

@@ -86,7 +86,9 @@ public class Farm : Building  // через ферму можно делать �
 
     public override void collectResources()  // метод собирания ресурсов Ставим дату на сейчасное число выщитываем сколько сегунд прошло с предыдущей даты  = вычисляем и потом вычисляем секунды умножаем на  сколько собирается в секунду =≥ обнуляем ресурсы
     {
-        float gold = countRes * curTimer;
+        if (countRes > countResMax / 5) {
+
+            float gold = countRes * curTimer;
         if (gold > countResMax) { MS.playerM.gold += countResMax; } else { MS.playerM.gold += gold; }
 
         //////   вытаскивать характеристику 
@@ -94,6 +96,7 @@ public class Farm : Building  // через ферму можно делать �
         curTimer = 0;
         countRes = 0;
         MS.uIM.audioSource.GetComponent<AudioSource>().PlayOneShot(collectRes);
+        }
     }
 
     /*

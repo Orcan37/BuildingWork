@@ -12,7 +12,7 @@ public class House : Building
         
         base.Awake();
         Invoke("Apply", 0.1f);
-        Debug.Log("dfdf");
+ 
     }
     void Apply()
     {

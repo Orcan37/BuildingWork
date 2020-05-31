@@ -4,8 +4,12 @@ using UnityEngine;
 
 public class Skill : MonoBehaviour
 {
-    public virtual void Apply(Entity entity)
+    public Sprite spriteS;
+
+
+
+    public virtual void Apply(GameObject entity)
     {
-        entity.GetComponent<Building>().collectResources();
+    
     }
 }

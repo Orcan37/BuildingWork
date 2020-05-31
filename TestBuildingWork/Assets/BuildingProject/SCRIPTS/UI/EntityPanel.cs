@@ -7,10 +7,12 @@ using UnityEngine.UI;
 public class EntityPanel : MonoBehaviour
 {
     public GameObject EnvokeObject;
-     
+    public Entity BildUnit;
     public Image striteBigIcon;
     public GameObject GridGenerator;// генератор кнопок 
     public GameObject BuildingButPref; // префаб кнопки
+
+    [Header("PanelTable")]
     public List<GameObject> BuildingInShopPrefs;
     //  public List<GameObject> BuildingInShopPrefsTest;
 
@@ -25,17 +27,25 @@ public class EntityPanel : MonoBehaviour
     public Button buy;
     public Button cancel;
 
-    public virtual void SelectObj(Entity unit)
+    public virtual void SelectObj(GameObject _unit)
     {
-        // ButClickNum = num;
-        Entity BildUnit = unit.GetComponent<Entity>();
-        striteBigIcon.sprite = BildUnit.spriteU;
-        nameTitleItem.text = BildUnit.nameTitle;
+        //        ButClickNum = num;
+        EnvokeObject = _unit;
+        Debug.Log("SelectObj= " + _unit.name);
+         BildUnit = EnvokeObject.GetComponent<Entity>();
+        if (striteBigIcon != null) striteBigIcon.sprite = BildUnit.spriteU;
+        if (nameTitleItem != null) nameTitleItem.text = BildUnit.nameTitle;
         //   discriptionShortItem.text = BildBref.discriptionShort;
         float goldSell = BildUnit.needGold;
-        Gold.text = goldSell.ToString() + " Gold Sell";
-        discriptionItem.text = BildUnit.discription;
+        if (Gold != null) Gold.text = goldSell.ToString() + " Gold Sell";
+        if (discriptionItem != null) discriptionItem.text = BildUnit.discription;
 
-        EnvokeObject = unit.gameObject;
+        SpawnAll();
+    }
+    public virtual void SpawnAll()
+    {
+
+
+
     }
 }

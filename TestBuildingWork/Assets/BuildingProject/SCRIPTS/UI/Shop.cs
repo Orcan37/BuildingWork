@@ -5,35 +5,35 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class Shop : EntityPanel, ISelectPanel
+public class Shop : EntityPanel //, ISelectPanel
 {
     
 
     // public List<GameObject> ButSpaw;
     public byte ButClickNum = 0;
 
-    public override void SelectObj(Entity unit)
-    {
-        base.SelectObj(unit);
+    //public override void SelectObj(GameObject unit)
+    //{
+    //    base.SelectObj(unit);
 
-    }
-        public void SelectNum(byte num)
+    //}
+        public void SelectNum(byte _num)
     {
-        ButClickNum = num;
-        Entity BildUnit = BuildingInShopPrefs[num].GetComponent<Entity>();
+        ButClickNum = _num;
+        Entity BildUnit = BuildingInShopPrefs[_num].GetComponent<Entity>();
         striteBigIcon.sprite = BildUnit.spriteU;
         nameTitleItem.text = BildUnit.nameTitle;
         //   discriptionShortItem.text = BildBref.discriptionShort;
         Gold.text = BildUnit.needGold.ToString() + " Gold";
         discriptionItem.text = BildUnit.discription;
-
+       
 
     }
 
     public virtual void buykOnClick()
     { // в ресурсах проверяет сколько там денег меньше или больше и отнимает если больше чем стоит
        
-        if (BuildingInShopPrefs.Count > 0) { 
+        if (BuildingInShopPrefs.Count > 0) {  
         Entity need = BuildingInShopPrefs[ButClickNum].GetComponent<Entity>();
     
 
@@ -51,7 +51,11 @@ public class Shop : EntityPanel, ISelectPanel
 
         EnvokeObject.GetComponent<Entity>().StartImproveTo(BuildingInShopPrefs[ButClickNum]);
         }
+
     }
+
+
+
     public virtual void cancelOnClick() { EnvokeObject = null; this.gameObject.SetActive(false); }
 
 
@@ -66,15 +70,9 @@ public class Shop : EntityPanel, ISelectPanel
 
 
    
-    public void SpawnAll(GameObject unit)
-    {
-
-
-    //      if (unit.Equals(!unitOld))
- 
-
-        {
-
+    public override void SpawnAll()
+    { 
+        { 
             foreach (Transform child in GridGenerator.transform)
             {
                 Destroy(child.gameObject);
@@ -83,35 +81,17 @@ public class Shop : EntityPanel, ISelectPanel
 
             byte i = 0;
             
-            foreach (GameObject b in BuildingInShopPrefs)   /// вызываем все из CurrentEvent
+            foreach (GameObject b in BildUnit.ImproveToPref)   /// вызываем все из CurrentEvent
             {
-
+                byte Imp = i;
                 GameObject clone = Instantiate(BuildingButPref, transform.position, transform.rotation);
                 clone.transform.SetParent(GridGenerator.transform);
 
-                clone.GetComponent<Image>().sprite = BuildingInShopPrefs[i].GetComponent<Entity>().spriteU;
-                clone.GetComponent<ButToAnyPanel>().numClick = i;
-                clone.GetComponent<ButToAnyPanel>().panel = this.gameObject;
-                i++;
-
+                clone.GetComponent<Image>().sprite = BildUnit.ImproveToPref[i].GetComponent<Entity>().spriteU;
+                clone.GetComponent<Button>().onClick.AddListener(() => SelectNum(Imp));
+                i++; 
             }
-        }
-
-
-        //for (byte i = 0; i < BuildingInShopPrefs.Length; i++)   /// вызываем все из CurrentEvent
-        //{
-        //    GameObject clone = Instantiate(BuildingButPref, transform.position, transform.rotation);
-        //    clone.transform.SetParent(GridGenerator.transform);
-
-        //    clone.GetComponent<Image>().sprite = BuildingInShopPrefs[i].GetComponent<Unit>().spriteU;
-        //    clone.GetComponent<ButToAnyPanel>().numClick = i;
-        //    clone.GetComponent<ButToAnyPanel>().panel = this.gameObject;
-
-
-        //}
-
-        //striteB =  BuildingInShop[0].GetComponent<Unit>().striteU ;
-        //striteB = BuildingInShop[1].GetComponent<Unit>().striteU;
+        } 
       
     }
 

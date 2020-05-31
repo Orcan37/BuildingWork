@@ -11,5 +11,8 @@ public class MS : MonoBehaviour
     static public UIM uIM;
     static public PlayerM playerM;
 
+
+
+
      
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class collectResSkill : Skill
 {
 
-    public override void Apply(Entity entity)
+    public override void Apply(GameObject entity)
     {
         entity.GetComponent<Building>().collectResources();
     }

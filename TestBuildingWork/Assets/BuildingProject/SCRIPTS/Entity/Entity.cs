@@ -5,7 +5,7 @@ using System;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class Entity : MonoBehaviour 
+public class Entity : MonoBehaviour, ISelectedEntity
 {
     [Header("ART")]
 
@@ -30,7 +30,7 @@ public class Entity : MonoBehaviour
 
     [Header("Ability")]
     // public List<GameObject> CanBuilding;
-    public List<GameObject> skill;
+    public List<Skill> skills;
 
     [Header("RESURS")]
     public float needTree;
@@ -41,21 +41,22 @@ public class Entity : MonoBehaviour
 
     [Tooltip("PanelOpen ")]
     [SerializeField]
-    public PanelClose panelClose = PanelClose.none;
+
     public PanelOpen panelOpen = PanelOpen.none; // камеру всю переделывать??
 
 
     public GameObject openPanel;
+    //public PanelClose panelClose = PanelClose.none;
     public enum PanelOpen : int
     {
         none = 0, DownPanel = 1, CenterPanel = 2, UPPanel = 3, SelectinonPanel = 4,
     };
 
 
-    public enum PanelClose : int
-    {
-        none = 0, сenterDownPanel = 1, сenterCenterPanel = 2, сenterUPPanel = 3, сenterSelectinonPanel = 4, centerAll = 5
-    };
+    //public enum PanelClose : int
+    //{
+    //    none = 0, сenterDownPanel = 1, сenterCenterPanel = 2, сenterUPPanel = 3, сenterSelectinonPanel = 4, centerAll = 5
+    //};
 
     [Header("Bars & Timer")]
     // Health //
@@ -83,16 +84,16 @@ public class Entity : MonoBehaviour
 
                 break;
             case PanelOpen.DownPanel:
-                Debug.Log($"Case 2"); if (MS.uIM.DownPanel) openPanel = MS.uIM.DownPanel;
+                Debug.Log($"Case 2"); if (MS.uIM.DownPanel != null) openPanel = MS.uIM.DownPanel; OpenedPanel();
                 break;
             case PanelOpen.CenterPanel:
-                Debug.Log($"Case 3"); if (MS.uIM.CenterPanel) openPanel = MS.uIM.CenterPanel;
+                Debug.Log($"Case 3"); if (MS.uIM.CenterPanel != null) openPanel = MS.uIM.CenterPanel; OpenedPanel();
                 break;
             case PanelOpen.UPPanel:
-                Debug.Log($"Case 4"); if (MS.uIM.UPPanel) openPanel = MS.uIM.UPPanel;
+                Debug.Log($"Case 4"); if (MS.uIM.UPPanel != null) openPanel = MS.uIM.UPPanel; OpenedPanel();
                 break;
             case PanelOpen.SelectinonPanel:
-                Debug.Log($"Case 4"); if (MS.uIM.SelectinonPanel) openPanel = MS.uIM.SelectinonPanel;
+                Debug.Log($"Case 4"); if (MS.uIM.SelectinonPanel != null) openPanel = MS.uIM.SelectinonPanel; OpenedPanel();
                 break;
             default:
                 Debug.Log("Default case");
@@ -102,11 +103,35 @@ public class Entity : MonoBehaviour
     }
 
 
+
+
+    private void OpenedPanel()
+    {
+        if (openPanel)
+        {
+            openPanel.SetActive(true);
+        }
+
+        EntityPanel PopenPanel = openPanel.GetComponent<EntityPanel>();
+        PopenPanel.SelectObj(this.gameObject);
+        PopenPanel.BuildingInShopPrefs.Clear();
+        byte i = 0;
+        foreach (GameObject g in ImproveToPref)
+        {
+            PopenPanel.BuildingInShopPrefs.Add(ImproveToPref[i]);
+            i++;
+        }
+
+        //    PopenPanel.SpawnAll();
+
+
+
+    }
+
+
     public virtual void ClosePanel() // например когда умрет
     {
         selected = false;
-        //    cameraU.enabled = true; // если есть камера
-        MS.uIM.SwitchPanel(openPanel, (byte)panelClose);
     }
     public virtual void OnMouseDown()
     {
@@ -114,36 +139,12 @@ public class Entity : MonoBehaviour
         {
 
 
-            if (panelOpen != PanelOpen.none && openPanel == null) { OpenPanelF(); } // если нужно поставить 
-
-            /// 
-            //  Debug.Log(panelClose + (int)panelClose);
-            selected = true;
-            //    cameraU.enabled = true; // если есть камера
-            if (openPanel)
-            {
-                MS.uIM.SwitchPanel(openPanel, (int)panelClose);
-
-            }
-
-            Shop PopenPanel = openPanel.GetComponent<Shop>();
-            PopenPanel.SelectObj(this);
-            PopenPanel.BuildingInShopPrefs.Clear();
-            byte i = 0;
-            foreach (GameObject g in ImproveToPref)
-            {
-                PopenPanel.BuildingInShopPrefs.Add(ImproveToPref[i]);
-                i++;
-            }
-            PopenPanel.SpawnAll(this.gameObject);
-
-
-           
-          
-         
-             
+            MS.uIM.Selected(this.gameObject);
         }
     }
+
+
+
 
     public void OnMouseEnter()
     {
@@ -153,17 +154,33 @@ public class Entity : MonoBehaviour
             if (constructionTime) constructionTime.gameObject.SetActive(false);
         }
     }
+
+
+
     public void OnMouseExit()
     {
-        if (!EventSystem.current.IsPointerOverGameObject())
-        {
-          //  healthBar = this.transform.Find("Canvas/Healbar").gameObject.GetComponent<UniversalBar>();
-            if (healthBar == true) healthBar.gameObject.SetActive(false);
-            if (constructionTime && currenTimer > 0) constructionTime.gameObject.SetActive(true);
-        }
+        //  if (!EventSystem.current.IsPointerOverGameObject())
+        // {
+        //  healthBar = this.transform.Find("Canvas/Healbar").gameObject.GetComponent<UniversalBar>();
+        if (healthBar == true) healthBar.gameObject.SetActive(false);
+        if (constructionTime && currenTimer > 0) constructionTime.gameObject.SetActive(true);
+        //   }
 
     }
-     
+    public void Selected()
+    {
+
+
+        selected = true;
+        if (panelOpen != PanelOpen.none && openPanel == null) { OpenPanelF(); return; }
+        if (openPanel != null) OpenedPanel();
+    }
+    public void unSelected()
+    {
+        if (openPanel != null) openPanel.SetActive(false);
+    }
+
+
 
 
     //начинаем улучшать персонажа
@@ -183,45 +200,45 @@ public class Entity : MonoBehaviour
 
 
 
-     
 
     /////  ---- Bar ---- ////
-  public virtual  void  Start()
-    {   
-     //   currentHealth = maxHealth;
+    public virtual void Start()
+    {
+        //   currentHealth = maxHealth;
+        openPanel = null;
         healthBar = this.transform.Find("Canvas/Healbar").gameObject.GetComponent<UniversalBar>();
         if (healthBar) healthBar.SetValueEntity(currentHealth);
-        
+
     }
     public virtual void Awake()
     {
 
     }
 
-        //void Update() //тестоя  Update нельзя
-        //{
-        //    if (Input.GetKeyDown(KeyCode.A))
-        //    {
-        //        TakeDamage(5);
-        //    }
-        //}
+    //void Update() //тестоя  Update нельзя
+    //{
+    //    if (Input.GetKeyDown(KeyCode.A))
+    //    {
+    //        TakeDamage(5);
+    //    }
+    //}
 
-        void TakeDamage(int damage)
+    void TakeDamage(int damage)
     {
         currentHealth -= damage;
 
         if (healthBar) healthBar.SetValueEntity(currentHealth);
     }
 
-     int seconds;
-     int munutes;
-   
+    int seconds;
+    int munutes;
+
 
 
     public virtual void StartImproveTo(GameObject pref)
     {
         Debug.Log("Тут");
-        constructionTime =  this.transform.Find("Canvas/ConstractBar").gameObject.GetComponent<UniversalBar>() ;
+        constructionTime = this.transform.Find("Canvas/ConstractBar").gameObject.GetComponent<UniversalBar>();
         ImproveToCurConstract = pref;
         Entity ImproveToCurConstractUnit = ImproveToCurConstract.GetComponent<Entity>();
         if (animateConstractBild) animateConstractBild.SetActive(true);
@@ -229,7 +246,7 @@ public class Entity : MonoBehaviour
         StartCoroutine(StartImproveToTimer());
         // maxTimer>60:munutes = maxTimer / 60? munutes=0;
         int maxTimerpref = ImproveToCurConstractUnit.maxTimer;
-        munutes = maxTimerpref > 60? munutes = maxTimerpref / 60 : munutes = 0;
+        munutes = maxTimerpref > 60 ? munutes = maxTimerpref / 60 : munutes = 0;
         seconds = maxTimerpref % 60;
         if (healthBar == true) healthBar.gameObject.SetActive(false);
         if (constructionTime) constructionTime.SetMaxValueEntity(maxTimerpref);
@@ -254,23 +271,36 @@ public class Entity : MonoBehaviour
                 ImproveToUnit();
                 Debug.Log("Здание Построилось!");
                 consractBild = true;
-               if(animateConstractBild) animateConstractBild.SetActive(false);
+                if (animateConstractBild) animateConstractBild.SetActive(false);
                 constructionTime.gameObject.SetActive(false);
                 break;
             }
-            else 
+            else
             {
-                if (seconds <= -1) { 
+                if (seconds <= -1)
+                {
 
                     munutes--;
-                seconds = 59;
+                    seconds = 59;
                 }
             }
-            constructionTime.textValue.text = munutes.ToString() + ":" + (seconds<10? "0" + seconds.ToString(): seconds.ToString());
+            constructionTime.textValue.text = munutes.ToString() + ":" + (seconds < 10 ? "0" + seconds.ToString() : seconds.ToString());
             constructionTime.SetValueEntity(currenTimer);
-          
-     //       Debug.Log(munutes.ToString() + ":" + seconds.ToString());
+
+            //       Debug.Log(munutes.ToString() + ":" + seconds.ToString());
         }
-         
+
     }
+
+
+    public virtual void UseSkill(byte _numSkill)
+    {
+        Skill skill = skills[_numSkill];
+        skill.Apply(this.gameObject);
+    }
+
+
+
+
+
 }
