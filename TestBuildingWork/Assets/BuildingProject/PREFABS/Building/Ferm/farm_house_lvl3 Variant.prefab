@@ -276,6 +276,11 @@ PrefabInstance:
       propertyPath: panelOpen
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1354374787829865343, guid: 6c15fae8f816647d1af1243aa48e45ae,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1737205145309934600, guid: 6c15fae8f816647d1af1243aa48e45ae,
         type: 3}
       propertyPath: m_Mesh
@@ -285,11 +290,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalPosition.z
       value: -0.236
-      objectReference: {fileID: 0}
-    - target: {fileID: 1354374787829865343, guid: 6c15fae8f816647d1af1243aa48e45ae,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5823369090686955500, guid: 6c15fae8f816647d1af1243aa48e45ae,
         type: 3}

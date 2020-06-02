@@ -2,14 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Skill : MonoBehaviour
+public class Skill : SkillData
 {
     public Sprite spriteS;
 
-
-
-    public virtual void Apply(GameObject entity)
+    public override void Apply(GameObject entity)
     {
-    
+        throw new System.NotImplementedException();
     }
 }

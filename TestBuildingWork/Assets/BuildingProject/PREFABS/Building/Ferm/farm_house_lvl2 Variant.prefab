@@ -130,8 +130,8 @@ PrefabInstance:
         type: 3}
       propertyPath: skills.Array.data[0]
       value: 
-      objectReference: {fileID: 4179169719418080934, guid: 33895e8772ca24e4d8a3ed9d71e5d561,
-        type: 3}
+      objectReference: {fileID: 11400000, guid: cb7081e4460904eb9981dc7461ca08ff,
+        type: 2}
     - target: {fileID: 6247584170925665089, guid: e9e5554d05a3044fd906531143e79c8c,
         type: 3}
       propertyPath: m_LocalPosition.x
