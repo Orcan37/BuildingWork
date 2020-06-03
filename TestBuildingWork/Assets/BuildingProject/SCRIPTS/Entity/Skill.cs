@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Skill : SkillData
 {
+    public string nameSkill;
     public Sprite spriteS;
 
     public override void Apply(GameObject entity)

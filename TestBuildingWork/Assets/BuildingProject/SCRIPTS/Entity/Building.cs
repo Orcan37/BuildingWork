@@ -18,5 +18,9 @@ public class Building : Entity // чем здания будут различа�
 
     }
 
+    //public override void Start()
+    //{
+    //    base.Start();
+    //}
 
 }

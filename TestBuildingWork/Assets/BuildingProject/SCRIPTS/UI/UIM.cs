@@ -11,9 +11,13 @@ public class UIM : MonoBehaviour // отключает панели и вклю�
     public TextMeshProUGUI GOLDtext;
     public TextMeshProUGUI Placetext;
 
+    [Header("VoiewAndControler")]
     public GameObject selectedGO;
- 
+    
     public Camera CurCamera;
+
+    public RaycastHit pHit;
+    public Ray pRay;
 
     [Header("AllPanel")]
     public GameObject DownPanel;
@@ -23,6 +27,16 @@ public class UIM : MonoBehaviour // отключает панели и вклю�
 
     public AudioSource audioSource;
 
+
+
+    private void Start()
+    {
+        MS.uIM = this;
+
+        audioSource = GetComponent<AudioSource>();
+    }
+
+
     public void ResRefresh()
     {
         float round = (int)MS.playerM.Gold;
@@ -30,24 +44,39 @@ public class UIM : MonoBehaviour // отключает панели и вклю�
         Placetext.text = MS.playerM.Place.ToString();
     }
 
+    private void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            pRay = CurCamera.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(pRay, out pHit))
+            {
+                if (pHit.collider.GetComponent<ISelectedEntity>() != null)
+                {
+                    Selected(pHit.collider.gameObject);
+                    Debug.Log("Player"); 
+                }
+                 else
+                {
+                    if (pHit.collider.tag == "Terrain")
+                    {
+                        Debug.Log("Terrain");
+                    }
+                }
+
+            }
+        }
+    }
 
 
     public void Selected(GameObject _GO)
-    {
-      
+    { 
      if(selectedGO != null)   selectedGO.GetComponent<ISelectedEntity>().unSelected();
         selectedGO = _GO;
         selectedGO.GetComponent<ISelectedEntity>().Selected();
 
     }
-     
-
-    private void Start()
-    {
-        MS.uIM = this;
-
-        audioSource = GetComponent<AudioSource>();
-    } 
+  
 
 }
  

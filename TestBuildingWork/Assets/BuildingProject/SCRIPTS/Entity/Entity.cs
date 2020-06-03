@@ -4,8 +4,9 @@ using UnityEngine;
 using System;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UniRx;
 
-public class Entity : MonoBehaviour, ISelectedEntity
+public    class  Entity : MonoBehaviour, ISelectedEntity
 {
     [Header("ART")]
 
@@ -19,6 +20,7 @@ public class Entity : MonoBehaviour, ISelectedEntity
     public string discription;
 
     public Camera cameraU;
+    public Animator anim;
     [Header("BUILDING")]
     //  public T requirements[]  // требование к постройке 
     public List<GameObject> ImproveToPref; // улучшиться до
@@ -31,13 +33,20 @@ public class Entity : MonoBehaviour, ISelectedEntity
     [Header("Ability")]
     // public List<GameObject> CanBuilding;
     public List<Skill> skills;
-
+    public int  damage; // нужно будет сделать через скилл и дистацию / а не через просто коллайдер
+    public float speed = 0;
     [Header("RESURS")]
     public float needTree;
     public float needGold;
     [Header("Status")]
     public bool selected = false;
-
+    public Owner owner = Owner.Player1;
+    public enum Owner : byte
+    {
+        Player1,
+        Player2,
+        none,
+    }
 
     [Tooltip("PanelOpen ")]
     [SerializeField]
@@ -52,7 +61,7 @@ public class Entity : MonoBehaviour, ISelectedEntity
         none = 0, DownPanel = 1, CenterPanel = 2, UPPanel = 3, SelectinonPanel = 4,
     };
 
-
+    
     //public enum PanelClose : int
     //{
     //    none = 0, сenterDownPanel = 1, сenterCenterPanel = 2, сenterUPPanel = 3, сenterSelectinonPanel = 4, centerAll = 5
@@ -62,12 +71,28 @@ public class Entity : MonoBehaviour, ISelectedEntity
     // Health //
     public UniversalBar healthBar;
     public int maxHealth = 100;
-    public int currentHealth;
+    public int currentHealth=100;
 
     // Constract //
     public UniversalBar constructionTime;
     public int maxTimer = 100;
     public int currenTimer;
+
+
+    public void Attack() {
+        AllanimFalse();
+        anim.SetBool("ATACK", true);
+
+
+    }
+
+    private void AllanimFalse()
+    {
+        anim.SetBool("RUN", false);
+        anim.SetBool("ATACK", false);
+        anim.SetBool("IDLE", false);
+
+    }
 
     public virtual void OpenPanel()
     {
@@ -135,12 +160,12 @@ public class Entity : MonoBehaviour, ISelectedEntity
     }
     public virtual void OnMouseDown()
     {
-        if (!EventSystem.current.IsPointerOverGameObject())
-        {
+        //if (!EventSystem.current.IsPointerOverGameObject())
+        //{
 
 
-            MS.uIM.Selected(this.gameObject);
-        }
+        //    MS.uIM.Selected(this.gameObject);
+        //}
     }
 
 
@@ -209,6 +234,14 @@ public class Entity : MonoBehaviour, ISelectedEntity
         healthBar = this.transform.Find("Canvas/Healbar").gameObject.GetComponent<UniversalBar>();
         if (healthBar) healthBar.SetValueEntity(currentHealth);
 
+        ////  UniRx ///
+        var clickStream = Observable.EveryUpdate()
+    .Where(_ => Input.GetMouseButtonDown(0));
+
+        clickStream.Buffer(clickStream.Throttle(TimeSpan.FromMilliseconds(250)))
+            .Where(xs => xs.Count >= 2)
+            .Subscribe(xs => Debug.Log("DoubleClick Detected! Count:" + xs.Count));
+
     }
     public virtual void Awake()
     {
@@ -223,11 +256,23 @@ public class Entity : MonoBehaviour, ISelectedEntity
     //    }
     //}
 
+       public  void Damage(int _damage)
+    {
+        TakeDamage(_damage);
+    }
+
+
+
+
     void TakeDamage(int damage)
     {
         currentHealth -= damage;
 
         if (healthBar) healthBar.SetValueEntity(currentHealth);
+        if (currentHealth<1)
+        {
+            Destroy(this.gameObject);
+        }
     }
 
     int seconds;
@@ -301,6 +346,6 @@ public class Entity : MonoBehaviour, ISelectedEntity
 
 
 
-
+ 
 
 }

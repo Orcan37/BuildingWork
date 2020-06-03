@@ -488,7 +488,7 @@ BoxCollider:
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 0.3040433, y: 0.1, z: 0.36}
-  m_Center: {x: 0, y: 0, z: -0.000000014901161}
+  m_Center: {x: 0, y: 0.05, z: -0.000000014901161}
 --- !u!114 &1055420705
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -513,11 +513,10 @@ MonoBehaviour:
   animateConstractBild: {fileID: 8438993678902443656}
   timeBuild: 0
   consractBild: 1
-  skill: []
+  skills: []
   needTree: 0
   needGold: 0
   selected: 0
-  panelClose: 2
   panelOpen: 2
   openPanel: {fileID: 0}
   healthBar: {fileID: 0}

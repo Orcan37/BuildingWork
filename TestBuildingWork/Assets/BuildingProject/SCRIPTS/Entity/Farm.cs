@@ -24,11 +24,7 @@ public class Farm : Building  // через ферму можно делать �
     // какую вещь собираем - например кузница
     public GameObject collectResBtn;
 
-    public override void OnMouseDown()
-    {
-        base.OnMouseDown();
-      
-    }
+ 
  
         public  override void Start()
     {

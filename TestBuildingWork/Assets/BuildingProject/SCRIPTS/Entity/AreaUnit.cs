@@ -1,7 +1,7 @@
 ﻿
 using UnityEngine;
 
-public class AreaUnit : Entity
+public class AreaUnit : Building
 {
     public override void OnMouseDown()
     {
