@@ -95,12 +95,12 @@ PrefabInstance:
       value: "house_lvl1 \u041F\u043E\u0432\u044B\u0448\u0430\u0435\u0442 \u043A\u043E\u043B\u0438\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E
         \u0436\u0438\u043B\u044C\u0446\u043E\u0432"
       objectReference: {fileID: 0}
-    - target: {fileID: 4005231774118867748, guid: cf0158e42716147b58a5879c0d425a78,
+    - target: {fileID: 4005231773860673070, guid: cf0158e42716147b58a5879c0d425a78,
         type: 3}
       propertyPath: cam
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 4005231773860673070, guid: cf0158e42716147b58a5879c0d425a78,
+    - target: {fileID: 4005231774118867748, guid: cf0158e42716147b58a5879c0d425a78,
         type: 3}
       propertyPath: cam
       value: 

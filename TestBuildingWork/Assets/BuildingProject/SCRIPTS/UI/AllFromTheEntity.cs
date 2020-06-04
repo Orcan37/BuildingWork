@@ -116,7 +116,7 @@ public class AllFromTheEntity : EntityPanel
     public void NumSkill(byte _num)
     {
         EnvokeObject.GetComponent<Entity>().UseSkill(_num);
-        Debug.Log("NumSkill" + _num);
+//        Debug.Log("NumSkill" + _num);
     }
 
 

@@ -7,6 +7,8 @@ using UnityEngine;
 public abstract class SkillData : ScriptableObject
 {
     public abstract  void Apply(GameObject entity);
+    public abstract void Change(Transform _obj);
+    public abstract void StartInstanse(GameObject _obj);
 }
 
 

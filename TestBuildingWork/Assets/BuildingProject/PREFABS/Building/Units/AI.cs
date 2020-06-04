@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class AI : MonoBehaviour
+public partial class Entity : MonoBehaviour
 {
 
     public GameObject currentTarget;
     private NavMeshAgent agent;
-    public List<GameObject> targets;
-    public Entity entityThis;
-    bool enterEnemy =false;
-    void Start()
-    {
-        entityThis = GetComponent<Entity>(); // находим все цели которые нужно убить
+    public  List<GameObject> targets;
 
-        agent = GetComponent<NavMeshAgent>();
-        FindEnemy();
+    bool enterEnemy = false;
+    void AIgo()
+    {
+        { 
+            agent = GetComponent<NavMeshAgent>();
+            FindEnemy();
+        }
     }
 
     void FindEnemy()
@@ -25,7 +25,7 @@ public class AI : MonoBehaviour
         Entity[] entity = GameObject.FindObjectsOfType<Entity>();
         for (int j = 0; j < entity.Length; j++)
         {
-            if (entity[j].owner != entityThis.owner)
+            if (entity[j].owner != owner)
             {
                 targets.Add(entity[j].gameObject);
             }
@@ -36,13 +36,7 @@ public class AI : MonoBehaviour
 
 
 
-    //void FixedUpdate()
-    //{
-    //    if(curTarget == null)
-    //    { 
-    //    agent.SetDestination(curTarget.position);
-    //    }
-    //}
+
 
     IEnumerator GetClosestTarget()
     {
@@ -88,45 +82,39 @@ public class AI : MonoBehaviour
         if (currentTarget != null)
         {
             agent.SetDestination(currentTarget.transform.position);
-            //  entityThis.Attack();
-            //  Debug.Log("Дошел ");
 
-            //  дальше ваша логика движения к цели
         }
     }
 
     private void OnTriggerEnter(Collider other)
-    {
-        if (other.gameObject.GetComponent<Entity>().owner != entityThis.owner)
-        //   if(other.tag == "Player")
+    {  
+        if (other.gameObject.GetComponent<Entity>() != null)
         {
-            //Enemy.GetComponent<NavMeshAgent>().enabled = true;
-            //Enemy.GetComponent<Animator>().SetTrigger("walk");
-            // Enemy = other.gameObject;
+            if (speed > 0 &&   owner != other.gameObject.GetComponent<Entity>().owner)
 
-            //  other.gameObject.GetComponent<Entity>().Damage(entityThis.damage);
-            //  Debug.Log("ВОЙНА!!!  ");
-            enterEnemy = true;
-            StartCoroutine(GetAttack());
+            {
+
+                enterEnemy = true;
+                StartCoroutine(GetAttack());
+
+            }
         }
     }
 
     IEnumerator GetAttack()
     {
 
-        // yield return new WaitForSeconds(3f);
-
         yield return new WaitForSeconds(3f);
         while (currentTarget != null && currentTarget.GetComponent<Entity>().currentHealth > 1)
         {
-            
-          agent.SetDestination(currentTarget.transform.position);
-            //yield return null;
-           if( enterEnemy == true) currentTarget.GetComponent<Entity>().Damage(entityThis.damage);
-            Debug.Log(Time.deltaTime);
+
+            agent.SetDestination(currentTarget.transform.position);
+
+            if (enterEnemy == true) currentTarget.GetComponent<Entity>().Damage(damage);
+
             yield return new WaitForSeconds(3f);
         }
-       
+
         enterEnemy = false;
         yield return new WaitForSeconds(1f);
         FindEnemy();

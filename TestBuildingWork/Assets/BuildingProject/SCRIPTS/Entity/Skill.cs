@@ -11,4 +11,14 @@ public class Skill : SkillData
     {
         throw new System.NotImplementedException();
     }
+    public override void Change(Transform _obj) {
+
+        throw new System.NotImplementedException();
+
+    }
+    public override void StartInstanse(GameObject _obj)
+    { 
+        throw new System.NotImplementedException(); 
+    }
+
 }

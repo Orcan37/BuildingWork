@@ -54,13 +54,13 @@ public class UIM : MonoBehaviour // отключает панели и вклю�
                 if (pHit.collider.GetComponent<ISelectedEntity>() != null)
                 {
                     Selected(pHit.collider.gameObject);
-                    Debug.Log("Player"); 
+               //     Debug.Log("Player"); 
                 }
                  else
                 {
                     if (pHit.collider.tag == "Terrain")
                     {
-                        Debug.Log("Terrain");
+                  //      Debug.Log("Terrain");
                     }
                 }
 

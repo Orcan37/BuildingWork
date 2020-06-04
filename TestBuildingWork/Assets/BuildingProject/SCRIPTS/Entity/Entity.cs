@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UniRx;
 
-public    class  Entity : MonoBehaviour, ISelectedEntity
+public partial class  Entity : MonoBehaviour, ISelectedEntity
 {
     [Header("ART")]
 
@@ -34,6 +34,8 @@ public    class  Entity : MonoBehaviour, ISelectedEntity
     // public List<GameObject> CanBuilding;
     public List<Skill> skills;
     public int  damage; // нужно будет сделать через скилл и дистацию / а не через просто коллайдер
+    public float couldownMax = 3; // пока что так потом нужно будет делать лист скилов который будет принимать в себя все переменные и уровни
+    public float couldownCur = 0;
     public float speed = 0;
     [Header("RESURS")]
     public float needTree;
@@ -41,12 +43,12 @@ public    class  Entity : MonoBehaviour, ISelectedEntity
     [Header("Status")]
     public bool selected = false;
     public Owner owner = Owner.Player1;
-    public enum Owner : byte
-    {
-        Player1,
-        Player2,
-        none,
-    }
+    //public enum Owner : byte
+    //{
+    //    Player1,
+    //    Player2,
+    //    none,
+    //}
 
     [Tooltip("PanelOpen ")]
     [SerializeField]
@@ -234,14 +236,16 @@ public    class  Entity : MonoBehaviour, ISelectedEntity
         healthBar = this.transform.Find("Canvas/Healbar").gameObject.GetComponent<UniversalBar>();
         if (healthBar) healthBar.SetValueEntity(currentHealth);
 
+        Invoke("PassiveSkill", 4);
+    //    PassiveSkill();
         ////  UniRx ///
-        var clickStream = Observable.EveryUpdate()
-    .Where(_ => Input.GetMouseButtonDown(0));
+        //    var clickStream = Observable.EveryUpdate()
+        //.Where(_ => Input.GetMouseButtonDown(0));
 
-        clickStream.Buffer(clickStream.Throttle(TimeSpan.FromMilliseconds(250)))
-            .Where(xs => xs.Count >= 2)
-            .Subscribe(xs => Debug.Log("DoubleClick Detected! Count:" + xs.Count));
-
+        //    clickStream.Buffer(clickStream.Throttle(TimeSpan.FromMilliseconds(250)))
+        //        .Where(xs => xs.Count >= 2)
+        //        .Subscribe(xs => Debug.Log("DoubleClick Detected! Count:" + xs.Count));
+        if (speed > 0) { AIgo(); }
     }
     public virtual void Awake()
     {
@@ -337,15 +341,34 @@ public    class  Entity : MonoBehaviour, ISelectedEntity
 
     }
 
-
+    int rotator = -1;
     public virtual void UseSkill(byte _numSkill)
     {
         Skill skill = skills[_numSkill];
+        if(skills[_numSkill].name == "AtakRotation") {
+            rotator = _numSkill;
+            Invoke("StopRotation", 2);
+
+        }
         skill.Apply(this.gameObject);
     }
 
+    void StopRotation(){
+        rotator = -1;
+    } 
+    private void LateUpdate()
+    {
+        if (rotator>=0) { skills[rotator].Apply(this.gameObject); }
+    }
 
-
- 
-
-}
+    public virtual void PassiveSkill()
+    {
+        for (int i = 0; i < skills.Count; i++)
+        {
+           if(skills[i].name == "TowerFireSkill")
+            {
+                skills[i].StartInstanse(this.gameObject);
+            }
+        } 
+    }
+    }
