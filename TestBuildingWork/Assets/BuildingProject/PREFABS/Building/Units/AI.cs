@@ -113,15 +113,13 @@ public partial class Entity : MonoBehaviour
     {
         if (other.gameObject.GetComponent<Entity>() != null)
         {
-            int r = 0;
-            //  Monitor.Enter(block);
+         
             if (enterEnemy == false && speed > 0 && owner != other.gameObject.GetComponent<Entity>().owner)
             {
-                r++;
-                Debug.Log("ПОТОК  " + r);
+        
                 enterEnemy = true;
                 StartCoroutine(GetAttack());
-                //       Monitor.Exit(block);
+           
                 //    MainThreadDispatcher.StartUpdateMicroCoroutine(GetClosestTarget());
             }
         }
