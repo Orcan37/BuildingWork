@@ -58,9 +58,7 @@ public partial class Entity : MonoBehaviour
     {
         yield return new WaitForSeconds(5f);
              FindEnemy();  
-
-      //  yield return new WaitForSeconds(5f);
-    //   StartCoroutine(GetFindEnemyAlways());
+ 
     }
 
 

@@ -79,8 +79,7 @@ public class AllFromTheEntity : EntityPanel
             if (i == 0) { infoBut = "Q"; } else if (i == 1) { infoBut = "W"; } else if (i == 2) { infoBut = "E"; } else if (i == 3) { infoBut = "R"; } else if (i == 4) { infoBut = "T"; }
 
             Observable.EveryUpdate() // поток update 
-            .Where(_ => Input.GetButton(infoBut)) // фильтруем на нажатие любой клавиши
-                                                  //  .Select(_ => Input.inputString) // выбираем нажатую клавишу
+            .Where(_ => Input.GetButton(infoBut)) // фильтруем на нажатие любой клавиши 
             .Subscribe(x =>
             { // подписываемся
                 NumSkill(ent);// вызываем метод OnKeyDown c параметром нажатой клавиши

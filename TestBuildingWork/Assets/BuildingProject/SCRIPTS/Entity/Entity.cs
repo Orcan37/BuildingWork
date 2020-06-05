@@ -235,8 +235,12 @@ public partial class Entity : MonoBehaviour, ISelectedEntity
          .Where(xs => xs.Count >= 2)
          .Subscribe(xs =>  Damage(xs.Count*3));
         //////
+        GetComponent<Entity>()
+       .ObserveEveryValueChanged(_ => speed > 1)
+       .Subscribe(_ => AIgo());
         ///
         if (speed > 0) { AIgo(); }
+        
     }
     public virtual void Awake()
     {
