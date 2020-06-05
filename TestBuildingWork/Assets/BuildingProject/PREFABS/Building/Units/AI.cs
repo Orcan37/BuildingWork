@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -12,7 +13,7 @@ public partial class Entity : MonoBehaviour
     private NavMeshAgent agent;
     public List<GameObject> targets;
 
-    bool enterEnemy = false;
+    public bool enterEnemy = false;
     void AIgo()
     {
         {
@@ -23,7 +24,7 @@ public partial class Entity : MonoBehaviour
     }
 
 
-     
+
 
     void FindEnemy()
     {
@@ -40,25 +41,20 @@ public partial class Entity : MonoBehaviour
         {
             StartCoroutine(GetFindEnemyAlways()); return;
         }
-
-
-
         //   MainThreadDispatcher.StartUpdateMicroCoroutine(GetClosestTarget());
         StartCoroutine(GetClosestTarget());
     }
 
     void currentTargetObs()
     {
-        currentTarget.OnDestroyAsObservable()
-             .Select(x => currentTarget.gameObject.name) 
-           .Subscribe(x =>    FindEnemy() );   
+
     }
 
     IEnumerator GetFindEnemyAlways()
     {
         yield return new WaitForSeconds(5f);
-             FindEnemy();  
- 
+        FindEnemy();
+
     }
 
 
@@ -92,7 +88,7 @@ public partial class Entity : MonoBehaviour
                     {
                         tmpDist = pathDistance;
                         currentTarget = targets[i];
-                    
+
                         agent.ResetPath();
                     }
                 }
@@ -104,24 +100,28 @@ public partial class Entity : MonoBehaviour
             }
 
         }
-        if (currentTarget != null )
+        if (currentTarget != null)
         {
             agent.SetDestination(currentTarget.transform.position);
-            currentTargetObs();
+            //currentTargetObs();
         }
-      
+
     }
 
+    static object block = new object();
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.GetComponent<Entity>() != null)
         {
-            if (speed > 0 && owner != other.gameObject.GetComponent<Entity>().owner)
-
+            int r = 0;
+            //  Monitor.Enter(block);
+            if (enterEnemy == false && speed > 0 && owner != other.gameObject.GetComponent<Entity>().owner)
             {
-
+                r++;
+                Debug.Log("ПОТОК  " + r);
                 enterEnemy = true;
                 StartCoroutine(GetAttack());
+                //       Monitor.Exit(block);
                 //    MainThreadDispatcher.StartUpdateMicroCoroutine(GetClosestTarget());
             }
         }
@@ -129,14 +129,19 @@ public partial class Entity : MonoBehaviour
 
     IEnumerator GetAttack()
     {
+        int r = 0;
+        currentTarget.OnDestroyAsObservable()
+   .Select(_ => currentTarget.gameObject.name)
+ .Subscribe(_ => enterEnemy = false, __ => FindEnemy()).AddTo(this.gameObject);
 
         yield return new WaitForSeconds(3f);
-        while (currentTarget != null && currentTarget.GetComponent<Entity>().currentHealth > 1)
+     
+        while (currentTarget != null && currentTarget.GetComponent<Entity>().currentHealth > 1 && enterEnemy == true)
         {
 
             agent.SetDestination(currentTarget.transform.position);
-
-            if (enterEnemy == true) currentTarget.GetComponent<Entity>().Damage(damage);
+            r++;
+            currentTarget.GetComponent<Entity>().Damage(damage); Debug.Log("Аатка " + r);
 
             yield return new WaitForSeconds(3f);
         }

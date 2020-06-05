@@ -39,6 +39,7 @@ public class Farm : Building  // через ферму можно делать �
          // LastCollectionRes = DateTime.Now; //  если нул
        */
         base.Start();
+        if (maxHealth > 130) currentHealth = maxHealth;
         collectResBtn = this.transform.Find("Canvas/CollectRes").gameObject;
          
         float deleniyКRes = 100 / countResMax; // Текщее в процентах

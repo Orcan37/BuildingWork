@@ -218,12 +218,12 @@ public partial class Entity : MonoBehaviour, ISelectedEntity
     /////  ---- Bar ---- ////
     public virtual void Start()
     {
-        //   currentHealth = maxHealth;
+      //  currentHealth = maxHealth;
         openPanel = null;
         healthBar = this.transform.Find("Canvas/Healbar").gameObject.GetComponent<UniversalBar>();
-        if (healthBar) healthBar.SetValueEntity(currentHealth);
+        if (healthBar) healthBar.SetValueEntity(currentHealth); healthBar.SetMaxValueEntity(maxHealth);
 
-       // Invoke("PassiveSkill", 4);
+        // Invoke("PassiveSkill", 4);
         Observable.Timer(System.TimeSpan.FromSeconds(4)).Subscribe(_ => { PassiveSkill(); }).AddTo(this.gameObject);
         //  UniRx  Damage ///
         var clickStream = Observable.EveryUpdate()
@@ -235,11 +235,12 @@ public partial class Entity : MonoBehaviour, ISelectedEntity
          .Where(xs => xs.Count >= 2)
          .Subscribe(xs =>  Damage(xs.Count*3));
         //////
-        GetComponent<Entity>()
-       .ObserveEveryValueChanged(_ => speed > 1)
-       .Subscribe(_ => AIgo());
+        // GetComponent<Entity>()
+        // на случай если вдруг появится скорость нужно еще при этом бабавить компонент NaveMesh если нету
+        //.ObserveEveryValueChanged(_ => speed > 1)  
+        //.Subscribe(_ => AIgo());
         ///
-        if (speed > 0) { AIgo(); }
+        if (speed > 3) { AIgo(); }
         
     }
     public virtual void Awake()
