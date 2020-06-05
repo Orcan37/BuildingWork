@@ -6,6 +6,8 @@ public class Skill : SkillData
 {
     public string nameSkill;
     public Sprite spriteS;
+ //[HideInInspector]
+    public bool passivSkill = false;
 
     public override void Apply(GameObject entity)
     {

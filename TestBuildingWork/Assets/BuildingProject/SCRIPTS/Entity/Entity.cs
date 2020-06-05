@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UniRx;
 
-public partial class  Entity : MonoBehaviour, ISelectedEntity
+public partial class Entity : MonoBehaviour, ISelectedEntity
 {
     [Header("ART")]
 
@@ -24,16 +24,17 @@ public partial class  Entity : MonoBehaviour, ISelectedEntity
     [Header("BUILDING")]
     //  public T requirements[]  // требование к постройке 
     public List<GameObject> ImproveToPref; // улучшиться до
+    [HideInInspector] public bool consractBild = true;
     private GameObject ImproveToCurConstract;
     public GameObject animateConstractBild;
     //  public GameObject Improvements[]; // улучшения поддерживаетъ
     public int timeBuild;  // время строительства
-    public bool consractBild = true;
+   
 
     [Header("Ability")]
     // public List<GameObject> CanBuilding;
     public List<Skill> skills;
-    public int  damage; // нужно будет сделать через скилл и дистацию / а не через просто коллайдер
+    public int damage; // нужно будет сделать через скилл и дистацию / а не через просто коллайдер
     public float couldownMax = 3; // пока что так потом нужно будет делать лист скилов который будет принимать в себя все переменные и уровни
     public float couldownCur = 0;
     public float speed = 0;
@@ -63,7 +64,7 @@ public partial class  Entity : MonoBehaviour, ISelectedEntity
         none = 0, DownPanel = 1, CenterPanel = 2, UPPanel = 3, SelectinonPanel = 4,
     };
 
-    
+
     //public enum PanelClose : int
     //{
     //    none = 0, сenterDownPanel = 1, сenterCenterPanel = 2, сenterUPPanel = 3, сenterSelectinonPanel = 4, centerAll = 5
@@ -73,28 +74,15 @@ public partial class  Entity : MonoBehaviour, ISelectedEntity
     // Health //
     public UniversalBar healthBar;
     public int maxHealth = 100;
-    public int currentHealth=100;
+    public int currentHealth = 100;
 
     // Constract //
     public UniversalBar constructionTime;
     public int maxTimer = 100;
     public int currenTimer;
 
-
-    public void Attack() {
-        AllanimFalse();
-        anim.SetBool("ATACK", true);
-
-
-    }
-
-    private void AllanimFalse()
-    {
-        anim.SetBool("RUN", false);
-        anim.SetBool("ATACK", false);
-        anim.SetBool("IDLE", false);
-
-    }
+ 
+ 
 
     public virtual void OpenPanel()
     {
@@ -111,19 +99,18 @@ public partial class  Entity : MonoBehaviour, ISelectedEntity
 
                 break;
             case PanelOpen.DownPanel:
-                Debug.Log($"Case 2"); if (MS.uIM.DownPanel != null) openPanel = MS.uIM.DownPanel; OpenedPanel();
+              if (MS.uIM.DownPanel != null) openPanel = MS.uIM.DownPanel; OpenedPanel();
                 break;
             case PanelOpen.CenterPanel:
-                Debug.Log($"Case 3"); if (MS.uIM.CenterPanel != null) openPanel = MS.uIM.CenterPanel; OpenedPanel();
+                if (MS.uIM.CenterPanel != null) openPanel = MS.uIM.CenterPanel; OpenedPanel();
                 break;
             case PanelOpen.UPPanel:
-                Debug.Log($"Case 4"); if (MS.uIM.UPPanel != null) openPanel = MS.uIM.UPPanel; OpenedPanel();
+                if (MS.uIM.UPPanel != null) openPanel = MS.uIM.UPPanel; OpenedPanel();
                 break;
             case PanelOpen.SelectinonPanel:
-                Debug.Log($"Case 4"); if (MS.uIM.SelectinonPanel != null) openPanel = MS.uIM.SelectinonPanel; OpenedPanel();
+               if (MS.uIM.SelectinonPanel != null) openPanel = MS.uIM.SelectinonPanel; OpenedPanel();
                 break;
-            default:
-                Debug.Log("Default case");
+            default: 
                 break;
         }
 
@@ -219,7 +206,7 @@ public partial class  Entity : MonoBehaviour, ISelectedEntity
     {
         GameObject clone = Instantiate(ImproveToCurConstract, transform.position, transform.rotation);
         clone.GetComponent<Entity>().openPanel = openPanel;
-
+       
         Destroy(this.gameObject, 0.1f);
         //clone.transform.SetParent(GridGenerator.transform);
     }
@@ -236,15 +223,19 @@ public partial class  Entity : MonoBehaviour, ISelectedEntity
         healthBar = this.transform.Find("Canvas/Healbar").gameObject.GetComponent<UniversalBar>();
         if (healthBar) healthBar.SetValueEntity(currentHealth);
 
-        Invoke("PassiveSkill", 4);
-    //    PassiveSkill();
-        ////  UniRx ///
-        //    var clickStream = Observable.EveryUpdate()
-        //.Where(_ => Input.GetMouseButtonDown(0));
-
-        //    clickStream.Buffer(clickStream.Throttle(TimeSpan.FromMilliseconds(250)))
-        //        .Where(xs => xs.Count >= 2)
-        //        .Subscribe(xs => Debug.Log("DoubleClick Detected! Count:" + xs.Count));
+       // Invoke("PassiveSkill", 4);
+        Observable.Timer(System.TimeSpan.FromSeconds(4)).Subscribe(_ => { PassiveSkill(); }).AddTo(this.gameObject);
+        //  UniRx  Damage ///
+        var clickStream = Observable.EveryUpdate()
+         .Where(_ => Input.GetMouseButtonDown(0))
+    
+         .Where(_ => MS.uIM.selectedGO == this.gameObject);
+        
+        clickStream.Buffer(clickStream.Throttle(TimeSpan.FromMilliseconds(150)))
+         .Where(xs => xs.Count >= 2)
+         .Subscribe(xs =>  Damage(xs.Count*3));
+        //////
+        ///
         if (speed > 0) { AIgo(); }
     }
     public virtual void Awake()
@@ -260,7 +251,7 @@ public partial class  Entity : MonoBehaviour, ISelectedEntity
     //    }
     //}
 
-       public  void Damage(int _damage)
+    public void Damage(int _damage)
     {
         TakeDamage(_damage);
     }
@@ -273,9 +264,9 @@ public partial class  Entity : MonoBehaviour, ISelectedEntity
         currentHealth -= damage;
 
         if (healthBar) healthBar.SetValueEntity(currentHealth);
-        if (currentHealth<1)
+        if (currentHealth < 1)
         {
-            Destroy(this.gameObject);
+            OnDestroy(); 
         }
     }
 
@@ -342,33 +333,65 @@ public partial class  Entity : MonoBehaviour, ISelectedEntity
     }
 
     int rotator = -1;
+
+
+
+
+
+
     public virtual void UseSkill(byte _numSkill)
     {
         Skill skill = skills[_numSkill];
-        if(skills[_numSkill].name == "AtakRotation") {
+        if (skills[_numSkill].name == "AtakRotation")
+        {
             rotator = _numSkill;
-            Invoke("StopRotation", 2);
-
+            //   Invoke("StopRotation", 2);
+            Observable.Timer(System.TimeSpan.FromSeconds(2)).Subscribe(_ => { StopRotation(); }).AddTo(this.gameObject);
         }
-        skill.Apply(this.gameObject);
+      if(skill.passivSkill != true )  skill.Apply(this.gameObject);
     }
 
-    void StopRotation(){
-        rotator = -1;
-    } 
-    private void LateUpdate()
+
+
+
+
+    void StopRotation()
     {
-        if (rotator>=0) { skills[rotator].Apply(this.gameObject); }
+        rotator = -1;
+    }
+    private void FixedUpdate()
+    {
+        if (rotator >= 0) { skills[rotator].Apply(this.gameObject); }
     }
 
     public virtual void PassiveSkill()
     {
         for (int i = 0; i < skills.Count; i++)
         {
-           if(skills[i].name == "TowerFireSkill")
+            if (skills[i].name == "AtakRotation")
+            {
+                rotator = i;
+ Observable.Timer(System.TimeSpan.FromSeconds(2)).Subscribe(_ => {  StopRotation();}).AddTo(this.gameObject);  
+
+              //  Invoke("StopRotation", 2);
+            }
+            else if (skills[i].name == "TowerFireSkill")
             {
                 skills[i].StartInstanse(this.gameObject);
             }
-        } 
+
+        }
     }
+
+
+
+
+    void OnDestroy()
+    {
+        Destroy(this.gameObject);
+        unSelected();
     }
+
+
+
+}

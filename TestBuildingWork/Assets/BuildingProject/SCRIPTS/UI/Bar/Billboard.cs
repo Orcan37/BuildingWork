@@ -1,10 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UniRx;
 public class Billboard : MonoBehaviour
 {
     public Transform cam;
+
+
+    private void Start()
+    {
+       MS.uIM
+                 .ObserveEveryValueChanged(x => x.CurCamera)
+                 .Subscribe(x => cam = x.transform);
+    }
+
+
 
     private void Awake()
     {

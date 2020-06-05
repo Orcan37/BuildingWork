@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -8,16 +9,20 @@ public partial class Entity : MonoBehaviour
 
     public GameObject currentTarget;
     private NavMeshAgent agent;
-    public  List<GameObject> targets;
+    public List<GameObject> targets;
 
     bool enterEnemy = false;
     void AIgo()
     {
-        { 
+        {
             agent = GetComponent<NavMeshAgent>();
             FindEnemy();
         }
+
     }
+
+
+     
 
     void FindEnemy()
     {
@@ -30,12 +35,25 @@ public partial class Entity : MonoBehaviour
                 targets.Add(entity[j].gameObject);
             }
         }
+
+        //   MainThreadDispatcher.StartUpdateMicroCoroutine(GetClosestTarget());
         StartCoroutine(GetClosestTarget());
     }
 
 
-
-
+    IEnumerator FindEnemyAlways() // постоянно ищем врага
+    {
+        yield return new WaitForSeconds(5f);
+        if (currentTarget == null || !currentTarget.activeSelf)
+        {
+            StopCoroutine(GetClosestTarget());
+            StopCoroutine(GetAttack());
+            FindEnemy();
+            Debug.Log("FindEnemyAlways");
+        }
+        yield return new WaitForSeconds(5f);
+        StartCoroutine(FindEnemyAlways());
+    }
 
 
     IEnumerator GetClosestTarget()
@@ -79,24 +97,27 @@ public partial class Entity : MonoBehaviour
             }
 
         }
-        if (currentTarget != null)
+        if (currentTarget != null )
         {
             agent.SetDestination(currentTarget.transform.position);
-
+        }
+        else
+        {
+            StartCoroutine(FindEnemyAlways());
         }
     }
 
     private void OnTriggerEnter(Collider other)
-    {  
+    {
         if (other.gameObject.GetComponent<Entity>() != null)
         {
-            if (speed > 0 &&   owner != other.gameObject.GetComponent<Entity>().owner)
+            if (speed > 0 && owner != other.gameObject.GetComponent<Entity>().owner)
 
             {
 
                 enterEnemy = true;
                 StartCoroutine(GetAttack());
-
+                //    MainThreadDispatcher.StartUpdateMicroCoroutine(GetClosestTarget());
             }
         }
     }
@@ -118,6 +139,7 @@ public partial class Entity : MonoBehaviour
         enterEnemy = false;
         yield return new WaitForSeconds(1f);
         FindEnemy();
+
     }
 
 

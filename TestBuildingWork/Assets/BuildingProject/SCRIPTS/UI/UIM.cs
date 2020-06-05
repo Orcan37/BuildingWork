@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using System;
-
+using UnityEngine.EventSystems;
 
 public class UIM : MonoBehaviour // отключает панели и включает + работает с камерами Покачто
 {
@@ -15,7 +15,8 @@ public class UIM : MonoBehaviour // отключает панели и вклю�
     public GameObject selectedGO;
     
     public Camera CurCamera;
-
+    // переделать все сделать чисто 3 камеры и менять расположения камеры UnitUpViever MainCamera UnitDownViewer
+    //не надо ничего создавать лишь позиции менять и включать их
     public RaycastHit pHit;
     public Ray pRay;
 
@@ -46,21 +47,29 @@ public class UIM : MonoBehaviour // отключает панели и вклю�
 
     private void Update()
     {
+        
         if (Input.GetMouseButtonDown(0))
         {
             pRay = CurCamera.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(pRay, out pHit))
             {
-                if (pHit.collider.GetComponent<ISelectedEntity>() != null)
+               if (!EventSystem.current.IsPointerOverGameObject())
                 {
-                    Selected(pHit.collider.gameObject);
-               //     Debug.Log("Player"); 
-                }
-                 else
-                {
-                    if (pHit.collider.tag == "Terrain")
+                    if (pHit.collider.GetComponent<ISelectedEntity>() != null)
                     {
-                  //      Debug.Log("Terrain");
+                        Selected(pHit.collider.gameObject);
+                        
+                    }
+                    else
+                    {
+                        if (pHit.collider.tag == "Terrain")
+                        {
+                        //    Debug.Log("Terrain");
+                        }
+                        else
+                        {
+                            Debug.Log(pHit.collider.gameObject);
+                        }
                     }
                 }
 
@@ -70,8 +79,9 @@ public class UIM : MonoBehaviour // отключает панели и вклю�
 
 
     public void Selected(GameObject _GO)
-    { 
-     if(selectedGO != null)   selectedGO.GetComponent<ISelectedEntity>().unSelected();
+    {    
+        if (selectedGO != null)
+        selectedGO.GetComponent<ISelectedEntity>().unSelected();
         selectedGO = _GO;
         selectedGO.GetComponent<ISelectedEntity>().Selected();
 

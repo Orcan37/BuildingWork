@@ -1841,6 +1841,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06fca85cc47be4b879e32ff10e37d07b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentTarget: {fileID: 0}
+  targets: []
   spriteU: {fileID: 21300000, guid: b3b560c58a9fc4af28c098ef2f773035, type: 3}
   soundsComplate: {fileID: 8300000, guid: 2c83109679b046a45a12f2ab05210351, type: 3}
   nameTitle: farm_house_1 Work
@@ -1852,11 +1854,12 @@ MonoBehaviour:
   anim: {fileID: 0}
   ImproveToPref:
   - {fileID: 1758741477305404444, guid: 6c15fae8f816647d1af1243aa48e45ae, type: 3}
+  consractBild: 1
   animateConstractBild: {fileID: 4794122596912228221}
   timeBuild: 0
-  consractBild: 1
   skills:
   - {fileID: 11400000, guid: cb7081e4460904eb9981dc7461ca08ff, type: 2}
+  - {fileID: 11400000, guid: 7983247dec9d2436b99585d996be49be, type: 2}
   damage: 0
   couldownMax: 7
   couldownCur: 0
@@ -1886,6 +1889,7 @@ MonoBehaviour:
   curTimer: 1000
   Gold: 0
   collectResBtn: {fileID: 0}
+  canCollect: 0
 --- !u!65 &-2815918594557073513
 BoxCollider:
   m_ObjectHideFlags: 0

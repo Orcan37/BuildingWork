@@ -1,8 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-[CreateAssetMenu(menuName = "Data/TowerSkill", fileName = "Name TowerSkill")]
-public class TowerSkill : Skill
+[CreateAssetMenu(menuName = "Data/PassivSkill/TowerSkill", fileName = "Name TowerSkill")]
+public class TowerSkill : PassivSkill
 {
     public GameObject UnitCollayder;
     public override void StartInstanse(GameObject _obj)

@@ -16,7 +16,7 @@ public class CameraTouchMove : MonoBehaviour
     {
         cam = GetComponent<Camera>();
         targetPos = transform.position.z;
-        Debug.Log(transform.position.z + " transform.position.zStaRT");
+        //        Debug.Log(transform.position.z + " transform.position.zStaRT");
     }
 
     private void Update()

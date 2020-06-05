@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UniRx;
+using UniRx.Triggers;
 public class AllFromTheEntity : EntityPanel
 {
 
@@ -49,7 +49,12 @@ public class AllFromTheEntity : EntityPanel
             clone1.transform.SetParent(GridGenerator.transform);
 
             clone1.GetComponent<Image>().sprite = BildUnit.ImproveToPref[i].GetComponent<Entity>().spriteU;
-            clone1.GetComponent<Button>().onClick.AddListener(() => numImproveToPref(Imp));
+            //  clone1.GetComponent<Button>().onClick.AddListener(() => numImproveToPref(Imp));
+            EnvokeObject.GetComponent<Entity>()
+             .ObserveEveryValueChanged(x => x.consractBild)
+             .Subscribe(x => clone1.GetComponent<Button>().interactable = x);
+
+            clone1.GetComponent<Button>().OnClickAsObservable().Subscribe(_ => numImproveToPref(Imp)); 
             i++;
 
         }
@@ -63,7 +68,32 @@ public class AllFromTheEntity : EntityPanel
             clone1.transform.SetParent(GridGenerator.transform);
 
             clone1.GetComponent<Image>().sprite = BildUnit.skills[i].spriteS;
-            clone1.GetComponent<Button>().onClick.AddListener(() => NumSkill(ent));
+            clone1.GetComponent<Button>().OnClickAsObservable().Subscribe(_ => NumSkill(ent));
+
+
+            //// UniRx Отключение кнопки при малом урожае ////
+            if (BildUnit.skills[i].name == "collectResSkill")
+            { 
+                EnvokeObject.GetComponent<Farm>()
+                    .ObserveEveryValueChanged(x => x.canCollect)
+                    .Subscribe(x => clone1.GetComponent<Button>().interactable = x); 
+            }
+            //// UniRx ////
+            string infoBut = "";
+            if (i == 0) { infoBut = "Q"; } else if (i == 1) { infoBut = "W"; } else if (i == 2) { infoBut = "E"; } else if (i == 3) { infoBut = "R"; } else if (i == 4) { infoBut = "T"; }
+
+            Observable.EveryUpdate() // поток update 
+            .Where(_ => Input.GetButton(infoBut)) // фильтруем на нажатие любой клавиши
+                                                  //  .Select(_ => Input.inputString) // выбираем нажатую клавишу
+            .Subscribe(x =>
+            { // подписываемся
+                NumSkill(ent);// вызываем метод OnKeyDown c параметром нажатой клавиши
+            }).AddTo(clone1); // привязываем подписку к gameobject-у
+
+            clone1.transform.Find("Info(TMP)").GetComponent<TextMeshProUGUI>().text = infoBut;
+
+            //// UniRx ////
+
             i++;
         }
     }
@@ -116,7 +146,7 @@ public class AllFromTheEntity : EntityPanel
     public void NumSkill(byte _num)
     {
         EnvokeObject.GetComponent<Entity>().UseSkill(_num);
-//        Debug.Log("NumSkill" + _num);
+        //        Debug.Log("NumSkill" + _num);
     }
 
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UniRx;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,7 +24,7 @@ public class Farm : Building  // через ферму можно делать �
     public float Gold;  // какой материал собираем можно сделать через enum
     // какую вещь собираем - например кузница
     public GameObject collectResBtn;
-
+    public bool canCollect;
  
  
         public  override void Start()
@@ -48,41 +49,95 @@ public class Farm : Building  // через ферму можно делать �
 
         collectResBtn.GetComponent<Button>().onClick.AddListener(() => collectResources());
 
+        var progressNotifier = new ScheduledNotifier<float>();
+      
+
+
+        Observable.Timer(System.TimeSpan.FromSeconds(1)) // создаем timer Observable
+            .RepeatUntilDestroy(this.gameObject) // делает таймер циклическим
+            .Subscribe(_ => { // подписываемся
+
+                if (countRes != countResMax && consractBild)
+                {
+                    if (countRes < countResMax)
+                    {
+                        
+                           curTimer += 1 ;
+                        countRes = power * curTimer;
+                        GOVerh = (float)(countRes * GoVerhNa1Procent) - Ymin;
+                        ObjectAnimate.transform.localPosition = new Vector3(ObjectAnimate.transform.localPosition.x, GOVerh, ObjectAnimate.transform.localPosition.z);
+
+                        //  Debug.Log(ObjectAnimate.transform.localPosition.y + "ObjectAnimate.transform.position.y" + GOVerh);
+                        // тут толжно быть расчет насколько вверх поднялись фермерские угодья
+
+                    }
+                    else { countRes = countResMax; ObjectAnimate.transform.localPosition = new Vector3(ObjectAnimate.transform.localPosition.x, Ymax, ObjectAnimate.transform.localPosition.z); }
+                }
+
+                if (GetcanCollect())
+                {
+                    collectResBtn.SetActive(true);
+                }
+                else { collectResBtn.SetActive(false); }
+
+            }).AddTo(this); // привязываем подписку к disposable
+
+
+
+    }
+
+    public bool CanCollect
+    {
+        get
+        {
+
+            if (countRes > countResMax / 5) { canCollect = true; } else { canCollect = false; }
+
+            return canCollect;
+        } 
     }
 
 
-    private void FixedUpdate()  // 
+    public bool GetcanCollect()
     {
-
-
-        if (countRes != countResMax && consractBild)
-        {
-            if (countRes < countResMax)
-            {
-                curTimer += Time.deltaTime;
-                countRes = power * curTimer;
-                GOVerh = (float)(countRes * GoVerhNa1Procent) - Ymin;
-                ObjectAnimate.transform.localPosition = new Vector3(ObjectAnimate.transform.localPosition.x, GOVerh, ObjectAnimate.transform.localPosition.z);
-
-                //  Debug.Log(ObjectAnimate.transform.localPosition.y + "ObjectAnimate.transform.position.y" + GOVerh);
-                // тут толжно быть расчет насколько вверх поднялись фермерские угодья
-
-            }
-            else { countRes = countResMax; ObjectAnimate.transform.localPosition = new Vector3(ObjectAnimate.transform.localPosition.x, Ymax, ObjectAnimate.transform.localPosition.z); }
-        }
-
-        if(countRes > countResMax / 5)
-        {
-            collectResBtn.SetActive(true);
-        }
-        else { collectResBtn.SetActive(false); }
-
-
+        if (countRes > countResMax / 5) { canCollect = true; return true; } else { canCollect = false; return false; }
     }
 
-    public override void collectResources()  // метод собирания ресурсов Ставим дату на сейчасное число выщитываем сколько сегунд прошло с предыдущей даты  = вычисляем и потом вычисляем секунды умножаем на  сколько собирается в секунду =≥ обнуляем ресурсы
+
+    //private void FixedUpdate()  // 
+    //{
+
+
+    //    if (countRes != countResMax && consractBild)
+    //    {
+    //        if (countRes < countResMax)
+    //        {
+    //            curTimer += Time.deltaTime;
+    //            countRes = power * curTimer;
+    //            GOVerh = (float)(countRes * GoVerhNa1Procent) - Ymin;
+    //            ObjectAnimate.transform.localPosition = new Vector3(ObjectAnimate.transform.localPosition.x, GOVerh, ObjectAnimate.transform.localPosition.z);
+
+    //            //  Debug.Log(ObjectAnimate.transform.localPosition.y + "ObjectAnimate.transform.position.y" + GOVerh);
+    //            // тут толжно быть расчет насколько вверх поднялись фермерские угодья
+
+    //        }
+    //        else { countRes = countResMax; ObjectAnimate.transform.localPosition = new Vector3(ObjectAnimate.transform.localPosition.x, Ymax, ObjectAnimate.transform.localPosition.z); }
+    //    }
+
+    //    if(GetcanCollect())
+    //    {
+    //        collectResBtn.SetActive(true);
+    //    }
+    //    else { collectResBtn.SetActive(false); }
+
+
+    //}
+
+
+    public override void collectResources()
+        // метод собирания ресурсов Ставим дату на сейчасное число выщитываем сколько сегунд прошло с предыдущей даты  = вычисляем и потом вычисляем секунды умножаем на  сколько собирается в секунду =≥ обнуляем ресурсы
     {
-        if (countRes > countResMax / 5) {
+        if (GetcanCollect()) {
 
             float gold = countRes * curTimer;
         if (gold > countResMax) { MS.playerM.gold += countResMax; } else { MS.playerM.gold += gold; }
