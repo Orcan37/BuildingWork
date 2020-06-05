@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UniRx;
+using UniRx.Triggers;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -35,24 +36,31 @@ public partial class Entity : MonoBehaviour
                 targets.Add(entity[j].gameObject);
             }
         }
+        if (targets.Count <= 0)
+        {
+            StartCoroutine(GetFindEnemyAlways()); return;
+        }
+
+
 
         //   MainThreadDispatcher.StartUpdateMicroCoroutine(GetClosestTarget());
         StartCoroutine(GetClosestTarget());
     }
 
+    void currentTargetObs()
+    {
+        currentTarget.OnDestroyAsObservable()
+             .Select(x => currentTarget.gameObject.name) 
+           .Subscribe(x =>    FindEnemy() );   
+    }
 
-    IEnumerator FindEnemyAlways() // постоянно ищем врага
+    IEnumerator GetFindEnemyAlways()
     {
         yield return new WaitForSeconds(5f);
-        if (currentTarget == null || !currentTarget.activeSelf)
-        {
-            StopCoroutine(GetClosestTarget());
-            StopCoroutine(GetAttack());
-            FindEnemy();
-            Debug.Log("FindEnemyAlways");
-        }
-        yield return new WaitForSeconds(5f);
-        StartCoroutine(FindEnemyAlways());
+             FindEnemy();  
+
+      //  yield return new WaitForSeconds(5f);
+    //   StartCoroutine(GetFindEnemyAlways());
     }
 
 
@@ -86,6 +94,7 @@ public partial class Entity : MonoBehaviour
                     {
                         tmpDist = pathDistance;
                         currentTarget = targets[i];
+                    
                         agent.ResetPath();
                     }
                 }
@@ -100,11 +109,9 @@ public partial class Entity : MonoBehaviour
         if (currentTarget != null )
         {
             agent.SetDestination(currentTarget.transform.position);
+            currentTargetObs();
         }
-        else
-        {
-            StartCoroutine(FindEnemyAlways());
-        }
+      
     }
 
     private void OnTriggerEnter(Collider other)
@@ -141,6 +148,7 @@ public partial class Entity : MonoBehaviour
         FindEnemy();
 
     }
+
 
 
 

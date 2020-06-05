@@ -17,11 +17,7 @@ public class AllFromTheEntity : EntityPanel
     {
 
         BildUnit = EnvokeObject.GetComponent<Entity>();
-
-
-
-
-
+         
         foreach (Transform child in GridGenerator.transform)
         {
             Destroy(child.gameObject);
