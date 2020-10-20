@@ -23,7 +23,7 @@ public class ItemView : MonoBehaviour
             tempObj.header = "Мясо";
             tempObj.countInStack = 20;
             // создаст в этой папке по время игры данный файл с заданными тут характеристиками и с нозванием
-            UnityEditor.AssetDatabase.CreateAsset(tempObj, "Assets/Items/NewItemNameEat.asset"); 
+//            UnityEditor.AssetDatabase.CreateAsset(tempObj, "Assets/Items/NewItemNameEat.asset"); 
         }
 
     }
