@@ -220,7 +220,7 @@ public partial class Entity : MonoBehaviour, ISelectedEntity
     {
       //  currentHealth = maxHealth;
         openPanel = null;
-        healthBar = this.transform.Find("Canvas/Healbar").gameObject.GetComponent<UniversalBar>();
+       I
         if (healthBar) healthBar.SetValueEntity(currentHealth); healthBar.SetMaxValueEntity(maxHealth);
 
         // Invoke("PassiveSkill", 4);

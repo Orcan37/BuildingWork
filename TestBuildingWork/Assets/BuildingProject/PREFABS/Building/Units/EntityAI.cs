@@ -8,19 +8,23 @@ using UnityEngine.AI;
 
 public partial class Entity : MonoBehaviour
 {
-
+    /// <summary>
+	/// BUILD
+	/// </summary>
     public GameObject currentTarget;
     private NavMeshAgent agent;
     public List<GameObject> targets;
-
+    public 
     public bool enterEnemy = false;
+
+   
     void AIgo()
     {
         {
             agent = GetComponent<NavMeshAgent>();
             FindEnemy();
         }
-
+      //  AreaTarget = GameObject.FindGameObjectsWithTag("AreaGames");
     }
 
 
@@ -50,9 +54,35 @@ public partial class Entity : MonoBehaviour
 
     }
 
+
+
+
+    void RandomMoveEnemy()
+    {
+        /// должен случайным образом менять позицию  предмет в поле определенный в редакторе  // может даже не предмет а чисто определять Координаты  куда будет идти Враг
+		/// !!!!! Назначаются координаты куда будет идти 
+		/// 
+		/// потом этот герой будет доходить в эту сторну  и как только дайдет сразу будет идти в другую сторну
+		///  лучше наверно сделать чеоез быстрый проход этой Штуки и когда он задевает его у этого выключается колыйдер и он бежит к другом у месту очень быстро
+		///
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+    /////////////    /////////////  /////////////    Стрый код     /////////////  /////////////  /////////////  /////////////  ///////////// 
     IEnumerator GetFindEnemyAlways()
     {
         yield return new WaitForSeconds(5f);
+         
         FindEnemy();
 
     }
@@ -139,7 +169,8 @@ public partial class Entity : MonoBehaviour
 
             agent.SetDestination(currentTarget.transform.position);
             r++;
-            currentTarget.GetComponent<Entity>().Damage(damage); Debug.Log("Аатка " + r);
+            currentTarget.GetComponent<Entity>().Damage(damage); 
+          //  Debug.Log("Аатка " + r);
 
             yield return new WaitForSeconds(3f);
         }
